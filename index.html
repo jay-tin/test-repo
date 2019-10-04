@@ -1,0 +1,79 @@
+<!doctype html>
+<html>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<head>
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Slab&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="./main.css">
+    <meta charset="utf-8">
+    <title>NoteR</title>
+</head>
+
+<body>
+
+    <nav class="navbar navbar-light navbar-toggler bg-light">
+        <form class="form-inline">
+            <h1 id="title">Noter</h1>
+
+        </form>
+        <form class="form-inline">
+        <button id="saveButton" class="btn btn-outline-success pull-right" type="button">Save All</button>
+        <a class="btn btn-info m-1 p-1" href="https://github.com/jatinAroraGit/note-down">Github</a>
+    </form>
+    </nav>
+    <p>&nbsp;Use Alt + S to Save the Note. Autosave enabled (Every 5 seconds)</p>
+    <div contenteditable="true" id="editor">
+
+    </div>
+</body>
+
+<script src="https://unpkg.com/hotkeys-js/dist/hotkeys.min.js"></script>
+<script src="https://unpkg.com/filer/dist/filer.min.js"></script>
+<script>
+    const fs = new Filer.FileSystem();
+    window.addEventListener('DOMContentLoaded', (event) => {
+        console.log('DOM fully loaded and parsed');
+        fs.readFile('/note', 'utf8', function (err, data) {
+            if (err) {
+                document.querySelector('#editor').innerHTML = "Welocome To My Notepad"
+            }
+            else
+                if (data) {
+                    document.querySelector('#editor').innerHTML = data;
+                }
+        })
+
+        var autosave = setInterval(setInterval(function () {
+            saveNote();
+           
+        }, 5000));
+
+        function saveNote() {
+            console.log("Saving...");
+            fs.writeFile("/note", document.querySelector('#editor').innerHTML, function (err) {
+                if (err) {
+                    return console.log(err);
+                }
+                else
+                    console.log("SAVED !");
+            });
+        }
+        document.getElementById("saveButton").addEventListener("click",function(){ saveNote();
+        alert('Note Saved');} );
+
+        hotkeys.filter = function (event) {
+            var tagName = (event.target || event.srcElement).tagName;
+            return !(tagName.isContentEditable || tagName == 'INPUT' || tagName == 'SELECT' || tagName == 'TEXTAREA');
+        }
+        hotkeys('alt+s', function (event, handler) {
+            saveNote();
+            alert('Note Saved');
+
+        });
+    });
+
+
+</script>
+
+</html>
